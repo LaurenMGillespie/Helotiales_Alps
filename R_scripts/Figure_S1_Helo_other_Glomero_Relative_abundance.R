@@ -1,7 +1,7 @@
 ## Figure S1. Helotiales ‘other’ and Gomeromycota relative abundances 
 
-Relative abundance of (a) Helotiales ‘other’ strains and (b) Glomeromycota strains relative to the entire fungal community per plot 
-by increasing altitude. The plot code number indicates the plot elevation (m).
+#Relative abundance of (a) Helotiales ‘other’ strains and (b) Glomeromycota strains relative to the entire fungal community per plot 
+#by increasing altitude. The plot code number indicates the plot elevation (m).
 
 
 # Required packages -------------------------------------
