@@ -12,8 +12,6 @@ library("patchwork")
 
 # Load data ---------------------------------------------
 
-# datafile with soil data at idtiers (i.e. zone A, B, C) level
-orchamp_metabar_blast_agg_years <- readRDS("data/orchamp_metabar_blast_agg_years_20261122.rds")
 # datafile with soil data at plot level (idtiers averaged)
 orchamp_metabar_blast_agg_years_2 <- readRDS("data/orchamp_metabar_blast_agg_years_idtiers_20261122.rds")
 
