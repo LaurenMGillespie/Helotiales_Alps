@@ -18,16 +18,16 @@ library("patchwork")
 # Load data ---------------------------------------------
 
 # datafile with soil data at idtiers (i.e. zone A, B, C) level
-orchamp_metabar_blast_agg_years <- readRDS("data/orchamp_metabar_blast_agg_years_20261122.rds")
+data_subplot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_subplot_level.rds")
 # datafile with soil data at plot level (idtiers averaged)
-orchamp_metabar_blast_agg_years_2 <- readRDS("data/orchamp_metabar_blast_agg_years_idtiers_20261122.rds")
+data_plot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_plot_level.rds")
 
 # curves
 
 # Run dredges--------------------------------------------
 
 ## format dataframe
-orchamp_agg_all_wide = orchamp_metabar_blast_agg_years %>%
+orchamp_agg_all_wide = data_subplot_level %>%
   dplyr::select(id_gradient, codeplot, idtiers, value_mean, code_analysis, code_analysis_3) %>%
   filter(!code_analysis_3 =="Helotialies_all") %>%
   mutate(code_analysis_3 =  case_when(
@@ -60,7 +60,7 @@ orchamp_agg_all_wide = orchamp_metabar_blast_agg_years %>%
   tidyr::drop_na()
 
 ## add meteo variables 
-orchamp_agg_all_wide_meteo = orchamp_metabar_blast_agg_years %>%
+orchamp_agg_all_wide_meteo = data_subplot_level %>%
   dplyr::select(id_gradient, codeplot, value_mean, code_analysis, code_analysis_3, 
   ) %>%
   filter(!code_analysis_3 =="Helotialies_all") %>%
@@ -122,7 +122,7 @@ orchamp_agg_all_wide_trans_scaled = orchamp_agg_all_wide_trans %>%
   mutate_at(vars(-matches("id_gradient|codeplot|idtiers|Helotiales_other|isolate_1-39|isolate_1-40|AF214576.1|AF486119.1|AJ292199.1|AJ319077.1|AY078144.1|AY394921.1|AY599235.1|AY599236.1|AY762619.1|AY762620.1|Acema1|Bisps1|Cadsp1|DQ148411.1|DQ485204.1|EF446149.1|EF446150.1|EU938674.1|EU938675.1|FM180476.1|FM180477.1|FM207641.1|FN178469.1|FN178471.1|Glomeromycota|Hymvar1|JAHLEZ010000069.1|JF304942.1|JN882306.1|KF836358.1|KT827742.1|KT835080.1|KU382495.1|KU886589.1|LT821494.1|MF943108.1|MH860824.1|MT276008.1|Melbi2|Melva1|OL742649.1|OM238143.1|Oidma1|PRJEB12348|PRJNA407395|Rhesp1|AY176753.1|Phisc1")), ~scale(., center = TRUE, scale = TRUE)[,1])
   
 
-souches <- orchamp_metabar_blast_agg_years %>%
+souches <- data_subplot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>%
   filter(!code_analysis_3 == "Helotiales_all") %>%
   select(code_analysis_3) %>%
@@ -216,7 +216,7 @@ saveRDS(dredges, file = "data/dredges.rds")
 # For the dredge on Helotiales_all
 ## format dataframe
 
-orchamp_agg_all_wide_global = orchamp_metabar_blast_agg_years %>%
+orchamp_agg_all_wide_global = data_subplot_level %>%
   select(id_gradient, codeplot, idtiers, value_mean, code_analysis, code_analysis_3, group 
   ) %>%
   filter(!code_analysis_3 =="Helotialies_all") %>%
@@ -1845,7 +1845,7 @@ R22_plot = dredges_resultats %>%
 
 # Habitat heatmap
 
-habitat_heatmap_df <- orchamp_metabar_blast_agg_years_2 %>%
+habitat_heatmap_df <- data_plot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>%
   filter(!code_analysis_4 == "Glomeromycota") %>%
   filter(!is.na(CorineLandCover_simplifie_2)) %>%
