@@ -13,13 +13,13 @@ library("patchwork")
 # Load data ---------------------------------------------
 
 # datafile with soil data at plot level (idtiers averaged)
-orchamp_metabar_blast_agg_years_2 <- readRDS("data/orchamp_metabar_blast_agg_years_idtiers_20261122.rds")
+data_plot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_plot_level.rds")
 
 # Figure S1a --------------------------------------------
 
 ### (a) Helotiales ‘other’ strains ####
 
-Helo_other_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
+Helo_other_stackedbarplot = data_plot_level %>%
   filter(!is.na(isolate) & code_analysis == "fung_relative_abundance") %>%
   mutate(code_analysis_2 = case_when(
     grepl("_sp$", code_analysis_2) ~ gsub("_sp$", "_unclassified", code_analysis_2),
@@ -99,7 +99,7 @@ palette_glomero <- c(
   "Septoglomus_unclassified" = "#BBFFFF"
   )
 
-Glomero_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
+Glomero_stackedbarplot = data_plot_level %>%
   filter(!is.na(isolate)) %>%
   mutate(code_analysis_2 = case_when(
     grepl("_sp$", code_analysis_2) ~ gsub("_sp$", "_unclassified", code_analysis_2),
