@@ -16,13 +16,13 @@ library("vegan")
 # import data ------------------------------------------------------------------------------
 
 # datafile with soil data at idtiers (i.e. zone A, B, C) level
-orchamp_metabar_blast_agg_years <- readRDS("data/orchamp_metabar_blast_agg_years_20261122.rds")
+data_subplot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_subplot_level.rds")
 # datafile with soil data at plot level (idtiers averaged)
-orchamp_metabar_blast_agg_years_2 <- readRDS("data/orchamp_metabar_blast_agg_years_idtiers_20261122.rds")
+data_plot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_plot_level.rds")
 
 
 # color palette ----------------------------------------------------------------------------
-colors_pca = orchamp_metabar_blast_agg_years %>%
+colors_pca = data_subplot_level %>%
   filter(grepl("Helotiales_all|Helotiales_other|isolate_1-39|isolate_1-40|AF214576.1|AF486119.1|AJ292199.1|AJ319077.1|AY078144.1|AY394921.1|AY599235.1|AY599236.1|AY762619.1|AY762620.1|Acema1|Bisps1|Cadsp1|DQ148411.1|DQ485204.1|EF446149.1|EF446150.1|EU938674.1|EU938675.1|FM180476.1|FM180477.1|FM207641.1|FN178469.1|FN178471.1|Glomeromycota|Hymvar1|JAHLEZ010000069.1|JF304942.1|JN882306.1|KF836358.1|KT827742.1|KT835080.1|KU382495.1|KU886589.1|LT821494.1|MF943108.1|MH860824.1|MT276008.1|Melbi2|Melva1|OL742649.1|OM238143.1|Oidma1|PRJEB12348|PRJNA407395|Rhesp1|AY176753.1|Phisc1", code_analysis_3)) %>%
   dplyr::select(code_analysis_3, code_analysis_4, root_endophyte_status, mycorrhizal_status, lifestyle, lifestyle_JA) %>%
 distinct() %>% 
@@ -37,14 +37,14 @@ distinct() %>%
 # Figure 2a. Helotiales and soil profile (i.e. soil pit variables) variable dataset co-structure ------------------
 
 # create soil profile data subset
-pedo_variables_agg = orchamp_metabar_blast_agg_years_2 %>%
+pedo_variables_agg = data_plot_level %>%
   filter(file_name %in% c("PhysicoChimie_20240711.json" )) %>%
   filter(!code_analysis %in% c("Calcaire (CaCO3) total", "Densité apparente", "Humidité prélèvement", "Pierrosité", "Traitement Carbone", "Aluminium (Al)", "Fer (Fe)", "Silicium (Si)")) %>% # not enough plots for these variables
   select(code_analysis) %>%
   distinct() %>%  
   dplyr::pull(., code_analysis)
 
-orchamp_wide_pedo_agg = orchamp_metabar_blast_agg_years_2 %>%
+orchamp_wide_pedo_agg = data_plot_level %>%
   group_by(codeplot, code_analysis_4, code_analysis, file_name) %>% 
   summarize(value_mean = sum(value_mean, na.rm = TRUE)  ) %>% 
   ungroup() %>%   
@@ -106,7 +106,7 @@ orchamp_wide_pedo_agg = orchamp_metabar_blast_agg_years_2 %>%
   mutate_at(vars(matches("Helotiales_sp_1-39|T._maxilliforme_1-40|L._orchidicola_UAMH8152|P._finlandica_CBS444.86|M._vraolstadiae_G1|H._ericae_UAMH5828|C._rhizophila_CBS109839|Grass_root_mycorrhizal_PPO-1|Grass_root_mycorrhizal_PPO-2|M._variabilis_UAMH8861|A._macrosclerotiorum_Acema1|Helotiales_other|Calycina_sp._Bisps1|Leptodontidium_sp._EF-M|C._finlandica_PRF15|P._fortinii_PFO_F|P._fortinii_CBS179.46|P._ericae_AC2_IMI_392567|Ascomycota_sp._Da_Bac_I4|Ascomycota_sp._Da_PoT1_C7|Tapesia_sp._Da_MaP_I9|H._varicosporoides_Hymvar1|Leptodontidium_sp._MPI-SDFR-AT-0119|O._maius_OMA_B|C._variabilis_VPRI_42388_T|P._ericae_EriJKE06|P._ericae_LivJKC02|O._maius_OM19|Cadophora_sp._Fe06|Hyaloscyphaceae_sp._1M05|M._bicolor_E_Melbi2|M._variabilis_T_Melva1|L._orchidicola_UAMH5422|H._hepaticicola_UAMH7357|O._maius_Zn_Oidma1|P._subalpina_UAMH-11012|G._debralockiae_T6G9_T|P._scopiformis_Phisc1|Rhexocercosporidium_sp._Rhesp1")), ~replace(., is.na(.), 0)) %>% 
   tidyr::drop_na()
 
-df1 = orchamp_metabar_blast_agg_years %>%
+df1 = data_subplot_level %>%
   filter((grepl("Helotiales_all|Helotiales_other|isolate_1-39|isolate_1-40|AF214576.1|AF486119.1|AJ292199.1|AJ319077.1|AY078144.1|AY394921.1|AY599235.1|AY599236.1|AY762619.1|AY762620.1|Acema1|Bisps1|Cadsp1|DQ148411.1|DQ485204.1|EF446149.1|EF446150.1|EU938674.1|EU938675.1|FM180476.1|FM180477.1|FM207641.1|FN178469.1|FN178471.1|Glomeromycota|Hymvar1|JAHLEZ010000069.1|JF304942.1|JN882306.1|KF836358.1|KT827742.1|KT835080.1|KU382495.1|KU886589.1|LT821494.1|MF943108.1|MH860824.1|MT276008.1|Melbi2|Melva1|OL742649.1|OM238143.1|Oidma1|PRJEB12348|PRJNA407395|Rhesp1|AY176753.1|Phisc1", code_analysis_3) &
             code_analysis == "fung_relative_abundance")) %>%
   select(codeplot) %>% distinct()
@@ -141,7 +141,7 @@ superpose(pedo_coia, fung_coia, plot = TRUE)
 
 
 # Mantel test 
-orchamp_wide_pedo_agg_mantel = orchamp_metabar_blast_agg_years_2 %>%
+orchamp_wide_pedo_agg_mantel = data_plot_level %>%
   group_by(codeplot, code_analysis_2, code_analysis_3, code_analysis, file_name) %>%
   summarize( value_mean = sum(value_mean, na.rm = TRUE)  ) %>% 
   ungroup() %>%   
@@ -187,7 +187,7 @@ orchamp_wide_pedo_agg_mantel = orchamp_metabar_blast_agg_years_2 %>%
   )) %>%
   filter(
     grepl("Al_CEC|Clay|N_total|Broyage_0_250µm|^CN$|CEC_cobaltihexamine|CaCO3_total|^Exchangeable_Ca$|Organic_C|Bulk_density|Fe_CEC|Humidite_prelevement|Fine_silt|Coarse_silt|Exchangeable_Mg$|Exchangeable_Mn$|^SOM$|^P$|Stoniness|^Exchangeable_K$|Preparation|Fine_sand|Coarse_sand|Exchangeable_Na|C_treatment|pH$|Al$|Fe$|Si$", code_analysis_2) |
-      (code_analysis_2 %in% unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", code_analysis_2 ]) &
+      (code_analysis_2 %in% unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", code_analysis_2 ]) &
          code_analysis == "fung_relative_abundance")) %>%
   filter(!grepl("CaCO3_total|Bulk_density|Humidite_prelevement|Stoniness|Preparation|Broyage_0_250µm|C_treatment", code_analysis_2)) %>%
   filter(!grepl("Al$|Fe$|Si$", code_analysis_2)) %>% 
@@ -196,21 +196,21 @@ orchamp_wide_pedo_agg_mantel = orchamp_metabar_blast_agg_years_2 %>%
   ungroup() %>%
   mutate_all(~ifelse(is.nan(.), NA, .)) %>%  
   mutate(value_mean =  case_when(
-    !is.na(value_mean) & (code_analysis_2 %in% unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", code_analysis_2 ])) ~ log10((value_mean + (0.0000113/2))),
+    !is.na(value_mean) & (code_analysis_2 %in% unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", code_analysis_2 ])) ~ log10((value_mean + (0.0000113/2))),
     TRUE ~ value_mean
   )) %>%
   tidyr::pivot_wider(names_from = code_analysis_2, values_from = value_mean) %>%
-  mutate_at(vars(matches(unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", code_analysis_2 ]))), ~replace(., is.na(.), 0)) %>% 
+  mutate_at(vars(matches(unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", code_analysis_2 ]))), ~replace(., is.na(.), 0)) %>% 
   tidyr::drop_na()
 
 
 fung_rel_abun_mantel = orchamp_wide_pedo_agg_mantel  %>% 
-  select(matches(unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", code_analysis_2 ]))) %>%
+  select(matches(unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", code_analysis_2 ]))) %>%
   mutate_if(is.numeric, ~(.x+5.247952)) %>%
   vegan::vegdist(., method = "bray")
 
 pedo_rel_abun_mantel = orchamp_wide_pedo_agg_mantel  %>%
-  select(-matches(unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", code_analysis_2 ]))) %>%
+  select(-matches(unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", code_analysis_2 ]))) %>%
   select(-codeplot) %>% 
   vegan::vegdist(., method = "bray")
 
@@ -227,7 +227,7 @@ fung_pedo_mantel
 # Figure 2b. Helotiales and Vegetation species dataset co-structure ------------------------
 
 # create Vegetation species data subset
-orchamp_wide_veg_fung = orchamp_metabar_blast_agg_years %>%
+orchamp_wide_veg_fung = data_subplot_level %>%
   filter((grepl("Helotiales_all|Helotiales_other|plant_relative_abundance|isolate_1-39|isolate_1-40|AF214576.1|AF486119.1|AJ292199.1|AJ319077.1|AY078144.1|AY394921.1|AY599235.1|AY599236.1|AY762619.1|AY762620.1|Acema1|Bisps1|Cadsp1|DQ148411.1|DQ485204.1|EF446149.1|EF446150.1|EU938674.1|EU938675.1|FM180476.1|FM180477.1|FM207641.1|FN178469.1|FN178471.1|Glomeromycota|Hymvar1|JAHLEZ010000069.1|JF304942.1|JN882306.1|KF836358.1|KT827742.1|KT835080.1|KU382495.1|KU886589.1|LT821494.1|MF943108.1|MH860824.1|MT276008.1|Melbi2|Melva1|OL742649.1|OM238143.1|Oidma1|PRJEB12348|PRJNA407395|Rhesp1|AY176753.1|Phisc1", code_analysis_3) &
             code_analysis == "fung_relative_abundance")|
            code_analysis == "plant_relative_abundance") %>% 
@@ -273,7 +273,7 @@ fung_coia = s.arrow(coia.fungiveg$c1, plabels = list(box = list(draw = FALSE), o
 superpose(veg_coia, fung_coia, plot = TRUE)
 
 # Mantel test
-orchamp_wide_veg_fung_mantel = orchamp_metabar_blast_agg_years %>%
+orchamp_wide_veg_fung_mantel = data_subplot_level %>%
   filter((grepl("Helotiales_other|plant_relative_abundance|isolate_1-39|isolate_1-40|AF214576.1|AF486119.1|AJ292199.1|AJ319077.1|AY078144.1|AY394921.1|AY599235.1|AY599236.1|AY762619.1|AY762620.1|Acema1|Bisps1|Cadsp1|DQ148411.1|DQ485204.1|EF446149.1|EF446150.1|EU938674.1|EU938675.1|FM180476.1|FM180477.1|FM207641.1|FN178469.1|FN178471.1|Glomeromycota|Hymvar1|JAHLEZ010000069.1|JF304942.1|JN882306.1|KF836358.1|KT827742.1|KT835080.1|KU382495.1|KU886589.1|LT821494.1|MF943108.1|MH860824.1|MT276008.1|Melbi2|Melva1|OL742649.1|OM238143.1|Oidma1|PRJEB12348|PRJNA407395|Rhesp1|AY176753.1|Phisc1", code_analysis_3) &
             code_analysis == "fung_relative_abundance")|
            code_analysis == "plant_relative_abundance") %>% 
@@ -300,12 +300,12 @@ orchamp_wide_veg_fung_mantel = orchamp_metabar_blast_agg_years %>%
 
 library(vegan)
 fung_rel_abun_mantel = orchamp_wide_veg_fung_mantel %>% 
-  select(matches(unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", isolate_code ]))) %>%
+  select(matches(unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", isolate_code ]))) %>%
   mutate_if(is.numeric, ~(.x+5.247953)) %>% 
   vegan::vegdist(., method = "bray")
 
 veg_rel_abun_mantel = orchamp_wide_veg_fung_mantel %>%
-  select(-matches(unique(orchamp_metabar_blast_agg_years_2[orchamp_metabar_blast_agg_years_2$group == "Helotiales_targeted" |orchamp_metabar_blast_agg_years_2$group == "Helotiales_other", isolate_code ]))) %>%
+  select(-matches(unique(data_plot_level[data_plot_level$group == "Helotiales_targeted" |data_plot_level$group == "Helotiales_other", isolate_code ]))) %>%
   select(-codeplot, -idtiers) %>%
   mutate_if(is.numeric, ~(.x+3.298417)) %>% 
   vegan::vegdist(., method = "bray")
