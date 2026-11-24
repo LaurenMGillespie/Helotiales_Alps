@@ -19,9 +19,9 @@ library("patchwork")
 # Load data ---------------------------------------------
 
 # datafile with soil data at idtiers (i.e. zone A, B, C) level
-orchamp_metabar_blast_agg_years <- readRDS("data/orchamp_metabar_blast_agg_years_20261122.rds")
+data_subplot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_subplot_level.rds")
 # datafile with soil data at plot level (idtiers averaged)
-orchamp_metabar_blast_agg_years_2 <- readRDS("data/orchamp_metabar_blast_agg_years_idtiers_20261122.rds")
+data_plot_level <- readRDS("data/Gillespie_et_al_ORCHAMP_data_plot_level.rds")
 
 # Figure 2a ---------------------------------------------
 
@@ -69,7 +69,7 @@ palette_Fig2 = c(
 
 
 ### (a) Relative abundance of all Helotiales within the entire soil fungal community ####
-fungi_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
+fungi_stackedbarplot = data_plot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>% 
   filter(reads_mean >0) %>% 
   select(codeplot,  altitude, isolate, code_analysis_4, value_mean) %>%
@@ -101,7 +101,7 @@ fungi_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
   ) 
 
 ### (a) Relative abundance of target plant-beneficial lineages within just the soil Helotiales community ####
-Helo_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
+Helo_stackedbarplot = data_plot_level %>%
   filter(code_analysis == "fung_helotiales_relative_abundance") %>%
   group_by(codeplot, altitude, code_analysis_4) %>% 
   summarize( value_mean = sum(value_mean, na.rm = TRUE)) %>%
@@ -136,7 +136,7 @@ Helo_stackedbarplot = orchamp_metabar_blast_agg_years_2 %>%
 
 
 # Habitat heatmap
-habitat_heatmap <- orchamp_metabar_blast_agg_years_2 %>%
+habitat_heatmap <- data_plot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>%
   filter(!grepl("Glomero", code_analysis_4)) %>%
   filter(!code_analysis_4 == "Helotiales_all") %>%
@@ -177,7 +177,7 @@ habitat_heatmap <- orchamp_metabar_blast_agg_years_2 %>%
 
 
 ### (b) Correlation between Helotiales relative abundance in soil and altitude.  ####
-scatterplot_Helotiales_all = orchamp_metabar_blast_agg_years %>%
+scatterplot_Helotiales_all = data_subplot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>% 
   select(codeplot,  idtiers, altitude, isolate, code_analysis_4, value_mean) %>% 
   group_by(codeplot, idtiers, altitude, code_analysis_4) %>%  
@@ -220,7 +220,7 @@ scatterplot_Helotiales_all = orchamp_metabar_blast_agg_years %>%
 scatterplot_Helotiales_all
 
 ### (c) Correlation between Glomeromycota relative abundance in soil and altitude. ####
-scatterplot_Glomero_all = orchamp_metabar_blast_agg_years %>%
+scatterplot_Glomero_all = data_subplot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>% 
   select(codeplot,  idtiers, altitude, isolate, code_analysis_4, value_mean) %>% #
   group_by(codeplot, idtiers, altitude, code_analysis_4) %>%  
@@ -278,7 +278,7 @@ increasing_altitude = data.frame(x =c(1:174), y = c(1,2,3)) %>%
   theme(plot.margin = margin(0.5,0.15,0.15,0.5, "cm"))
 
 ### LMM Helotiales relative abundance vs altitude ###
-only_target_helotiales = orchamp_metabar_blast_agg_years %>%
+only_target_helotiales = data_subplot_level %>%
   filter(code_analysis == "fung_relative_abundance") %>% 
   select(codeplot,  idtiers, altitude, isolate, code_analysis_4, value_mean) %>% 
   group_by(codeplot, idtiers, altitude, code_analysis_4) %>%  
